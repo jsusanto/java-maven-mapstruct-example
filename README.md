@@ -21,7 +21,7 @@ Step 2 - Run a test <br/>
 
 ![image](https://github.com/jsusanto/java-maven-mapstruct-example/assets/132423461/b1bcf2fc-6e7f-4154-9140-98138ab6fc53)
 
-# Create SimpleSourceDestinationMapperImpl automatically when Building the project
+# Example 1 - Create SimpleSourceDestinationMapperImpl automatically when Building the project
 
 Note: <i>No need to create this file because it's automatically created when you compile in the target/generated-sources/</i>
 <pre>
@@ -64,4 +64,72 @@ public class SimpleSourceDestinationMapperImpl implements SimpleSourceDestinatio
         return simpleSource;
     }
 }  
+</pre>
+
+# Example 2 - Student and Student Entity (Mapper)
+
+<ul>
+  <li>Student.java</li>
+  <li>StudentEntity.java</li>
+  <li>StudentMapper.java</li>
+</ul>
+
+![image](https://github.com/jsusanto/java-maven-mapstruct-example/assets/132423461/66bd8796-b45b-4147-911c-d813e03069d3)
+
+StudentMapper.java
+<pre>
+package com.medibank.javamavenmapstruct.student;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper
+public interface StudentMapper {
+   @Mapping(target="className", source="classVal")
+   Student getModelFromEntity(StudentEntity student);
+
+   @Mapping(target="classVal", source="className")
+   StudentEntity getEntityFromModel(Student student);
+}
+</pre>
+
+![image](https://github.com/jsusanto/java-maven-mapstruct-example/assets/132423461/739d7b3c-5544-490a-b2d2-6b2f08cfff82)
+
+<pre>
+package student;
+
+import com.medibank.javamavenmapstruct.student.Student;
+import com.medibank.javamavenmapstruct.student.StudentEntity;
+import com.medibank.javamavenmapstruct.student.StudentMapper;
+import static junit.framework.Assert.assertEquals;
+import org.junit.Test;
+import org.mapstruct.factory.Mappers;
+
+public class StudentMapperTest {
+    private StudentMapper studentMapper = Mappers.getMapper(StudentMapper.class);
+    
+   @Test
+   public void testEntityToModel() {
+      StudentEntity entity = new StudentEntity();
+      entity.setClassVal("X");
+      entity.setName("John");
+      entity.setId(1);
+      Student model = studentMapper.getModelFromEntity(entity);
+      assertEquals(entity.getClassVal(), model.getClassName());
+      assertEquals(entity.getName(), model.getName());
+      assertEquals(entity.getId(), model.getId());
+   }
+   
+   @Test
+   public void testModelToEntity() {
+      Student model = new Student();
+      model.setId(1);
+      model.setName("John");
+      model.setClassName("X");
+      StudentEntity entity = studentMapper.getEntityFromModel(model);
+      assertEquals(entity.getClassVal(), model.getClassName());
+      assertEquals(entity.getName(), model.getName());
+      assertEquals(entity.getId(), model.getId());
+   }
+}
 </pre>
